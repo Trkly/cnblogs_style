@@ -1,0 +1,132 @@
+<script>
+    // 添加二级菜单
+    function addSubmenuItem(menuItemId, text, url) {
+        var menuItem = document.getElementById(menuItemId);
+        //  如果没有二级菜单先创建
+        if (menuItem.getElementsByTagName('ul')[0] == undefined) {
+            var submenu = document.createElement('ul');
+            submenu.setAttribute('class', 'submenu');
+            menuItem.append(submenu);
+        }
+        var submenu = menuItem.getElementsByTagName('ul')[0];
+        var li = document.createElement('li');
+        li.innerHTML = '<a href="' + url + '">' + text + '</a>';
+        submenu.append(li);
+    }
+
+    (function (jQuery) {
+
+        var arr = [],
+            slice = arr.slice;
+
+        var methods = {
+            init: function () {},
+            addNav: function (index, name, url, menuItemId) {
+                var $nav = $(this),
+                    $items = $nav.children(),
+                    $item = $('<li id="' + menuItemId + '"><a class="menu" href="' + url + '">' + name +
+                        '</a></li>');
+                if (index < $items.length) {
+                    $items.eq(index).before($item);
+                } else {
+                    $nav.append($item);
+                }
+                return this;
+            },
+            removeNav: function (index) {
+                var $nav = $(this);
+                $nav.children(':eq(' + index + ')').remove();
+                return this;
+            }
+        };
+
+        $.fn.cnblogsNav = function (method) {
+            if (methods[method]) {
+                return methods[method].apply(this, slice.call(arguments, 1));
+            } else if (typeof method === 'object' || !method) {
+                return methods.init.apply(this, arguments);
+            } else {
+                $.error('Method ' + method + ' does not exist on jQuery.cnblogsNav');
+            }
+        };
+    })(jQuery);
+    /*
+        index：添加的导航的索引，从0开始
+        name：导航的名称
+        url：导航的url
+    */
+    $(function () {
+        var $navList = $('#navList');
+        var index = 0;
+
+        // clear all the list items
+        document.getElementById('navList').innerHTML = '';
+
+        // add new items
+        $navList.cnblogsNav('addNav', index++, '🏡 Home', 'https://www.cnblogs.com/Acapplella/', 'menuItemHome');
+        $navList.cnblogsNav('addNav', index++, '👨🏻‍🎓 About',
+            'https://www.cnblogs.com/RioTian/p/12330051.html', 'menuItemAbout');
+        $navList.cnblogsNav('addNav', index++, '🔗 Links', 'javascript:void(0)', 'menuItemLinks');
+        $navList.cnblogsNav('addNav', index++, '🔑 Admin', 'https://i.cnblogs.com/', 'menuItemAdmin');
+        // $navList.cnblogsNav('addNav', index++, '📧 Email','https://mail.google.com/mail/u/0/#inbox?compose=new', 'menuItemEmail');
+
+
+        // Test cases
+        // https://emojipedia.org/
+        // http://emojihomepage.com/
+        addSubmenuItem('menuItemLinks', '📃 MainPage', 'https://home.cnblogs.com/u/Acapplella/');
+        addSubmenuItem('menuItemLinks', '📝 NewPost', 'https://i.cnblogs.com/posts/edit');
+        addSubmenuItem('menuItemLinks', '⭐ 代码高亮', 'https://highlightcode.com/');
+        addSubmenuItem('menuItemLinks', '🔍 文章搜索', 'https://zzk.cnblogs.com/my?app=Blogpost');
+        addSubmenuItem('menuItemLinks', '😸 Github', 'https://github.com/Trkly');
+        addSubmenuItem('menuItemLinks', '💡 蒟蒻大佬', 'https://www.jvruo.com/index.php');
+        addSubmenuItem('menuItemLinks', '🔋 千千大佬', 'https://www.dreamwings.cn/');
+        addSubmenuItem('menuItemLinks', '🎵 Netease', 'https://music.163.com/#/user/home?id=296366418');
+
+        // addSubmenuItem('menuItemLinks', '💭 Weibo', 'https://weibo.com/sinkinben');
+        // addSubmenuItem('menuItemLinks', '📘 Zhihu', 'https://www.zhihu.com/people/2heart');
+        // addSubmenuItem('menuItemLinks', '📗 Douban', 'https://www.douban.com/people/sinkinben/');
+        // addSubmenuItem('menuItemLinks', '🌎 Facebook', 'https://www.facebook.com/sinkinben/');
+        // addSubmenuItem('menuItemLinks', '📧 Email', 'https://mail.google.com/mail/u/0/#inbox?compose=new');
+        // addSubmenuItem('menuItemLinks', '👨‍🌾 Leetcode', 'https://leetcode-cn.com/u/murabito-b/');
+
+
+        // click again to hide the submenu on mobile
+        if (isMobile()) {
+            var menuItemLinks = document.getElementById('menuItemLinks');
+            menuItemLinks.onclick = function () {
+                var submenu = menuItemLinks.getElementsByTagName('ul')[0];
+                var status = submenu.style.display;
+                if (status == 'none') {
+                    submenu.style.display = 'block';
+                } else {
+                    submenu.style.display = 'none';
+                }
+            }
+        }
+
+        // change the browser tab icon
+        document.getElementById('favicon').href =
+            'https://img2020.cnblogs.com/blog/2006461/202105/2006461-20210525165610022-1621462154.jpg';
+
+        // change the title logo
+        var logo = document.getElementById('blogLogo');
+        logo.setAttribute('src', 'https://img2020.cnblogs.com/blog/2006461/202105/2006461-20210525165610022-1621462154.jpg');
+        logo.setAttribute('alt', 'Administrator');
+        logo.style.transform = 'rotateY(180deg)';
+        // click the title logo to jump to admin backend
+        document.getElementById('lnkBlogLogo').setAttribute('href', 'https://home.cnblogs.com/u/Acapplella/');
+
+        // change the browser tab title
+        var title = document.getElementsByTagName('title')[0];
+        title.innerText = title.innerText.replace(" - 博客园", "");
+
+        // post desc
+        var dayList = document.getElementsByClassName('day');
+        for (var i = 0; i < dayList.length; i++) {
+            var postdesc = dayList[i].getElementsByClassName('postDesc')[0];
+            postdesc.innerText = postdesc.innerText.replace('sinkinben', 'by sinkinben');
+        }
+
+    });
+</script>
